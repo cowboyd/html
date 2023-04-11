@@ -7,11 +7,10 @@ it is not true. This allows you to represent an HTML tag in a fluent as a simple
 data structure and then how you serialize that into a DOM, or into a string, is
 up to you.
 
-For example, here is how you would represent the current HTML5 Boilerplate using
-JS
+For example, here is how you would represent the [current HTML5 Boilerplate][1]
+using JS
 
 ```ts
-/* https://github.com/h5bp/html5-boilerplate-template/blob/main/index.html */
 html({ class: "no-js", lang: "en-US" },
   head(
     meta({ charset: "utf-8" }),
@@ -48,3 +47,5 @@ To see this example in action:
 ``` shellsession
 $ deno task h5bp
 ```
+
+[1]: https://github.com/h5bp/html5-boilerplate-template/blob/main/index.html

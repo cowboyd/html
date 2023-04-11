@@ -1,0 +1,10 @@
+{
+  "tasks": {
+    "h5bp": "deno run examples/html5-boilerplate-icremental-dom.ts"
+  },
+  "lint": {
+    "rules": {
+      "exclude": ["prefer-const"]
+    },
+  }
+}

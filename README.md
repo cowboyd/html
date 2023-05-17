@@ -11,7 +11,8 @@ For example, here is how you would represent the [current HTML5 Boilerplate][1]
 using JS
 
 ```ts
-html({ class: "no-js", lang: "en-US" },
+html(
+  { class: "no-js", lang: "en-US" },
   head(
     meta({ charset: "utf-8" }),
     title("HTML5 Boilerplate"),
@@ -44,7 +45,7 @@ html({ class: "no-js", lang: "en-US" },
 
 To see this example in action:
 
-``` shellsession
+```shellsession
 $ deno task h5bp
 ```
 

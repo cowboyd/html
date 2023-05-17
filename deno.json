@@ -5,6 +5,6 @@
   "lint": {
     "rules": {
       "exclude": ["prefer-const"]
-    },
+    }
   }
 }

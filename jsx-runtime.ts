@@ -40,3 +40,5 @@ export function jsx(
     return tagOrFn(args);
   }
 }
+
+export const jsxs = jsx;

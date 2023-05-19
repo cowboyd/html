@@ -7,7 +7,7 @@ const links = [
   { rel: "apple-touch-icon", href: "icon.png" },
   { rel: "stylesheet", href: "css/normalize.css" },
   { rel: "stylesheet", href: "css/style.css" },
-  { rel: "manifest", href: "site.webmanifest" }
+  { rel: "manifest", href: "site.webmanifest" },
 ];
 
 const metas = (
@@ -27,7 +27,7 @@ export const h5bp = (
     <head>
       <title>HTML5 Boilerplate</title>
       {metas}
-      {links.map(link => (<link {...link} />))}
+      {links.map((link) => <link {...link} />)}
       <link rel="icon" href="/favicon.ico" sizes="any" />
       <link rel="icon" herf="/icon.svg" type="image/svg+xml" />
       <link rel="apple-touch-icon" href="icon.png" />

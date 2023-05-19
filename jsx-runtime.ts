@@ -1,5 +1,5 @@
-import type { Attrs, Node, Tag, Fragment } from "./mod.ts";
-import { isNode } from "./mod.ts";
+import type { Attrs, Fragment, Node, Tag } from "./mod.ts";
+import { isFragment, isTag } from "./mod.ts";
 
 declare global {
   namespace JSX {
@@ -15,52 +15,59 @@ export interface NodeFn {
 }
 
 export interface JSXProps extends Record<string, unknown> {
-  children?: string | Node;
+  children?: JSXChild | JSXChild[];
 }
 
-export interface JSXSProps extends Record<string, unknown> {
-  children?: (string | Node | Fragment)[];
-}
-
+export type JSXChild = number | boolean | Node | Fragment;
 
 export function jsx(
   tagOrFn: string | NodeFn,
-  props: JSXProps = {}
+  props: JSXProps = {},
 ): Node {
-  let { children, ...attrs } = props;
-  if (typeof tagOrFn === "string") {
-    return {
-      name: tagOrFn,
-      attrs: attrs as Attrs,
-      children: children != null ? [children] : [],
+  let { children: childOrChildren, ...attrs } = props;
+  let children = childOrChildren == null
+    ? []
+    : Array.isArray(childOrChildren)
+    ? childOrChildren
+    : [childOrChildren];
+  let childNodes = children.reduce((nodes, child) => {
+    if (isFragment(child) && !isTag(child)) {
+      return nodes.concat(child.children);
+    } else {
+      return nodes.concat(child);
     }
-  } else {
-    return tagOrFn(props);
-  }
-}
+  }, [] as JSXChild[]).map(normalize) as Node[];
 
-export function jsxs(
-  tagOrFn: string | NodeFn,
-  props: JSXSProps = {}
-): Node {
-  let { children = [], ...attrs } = props;
   if (typeof tagOrFn === "string") {
     return {
       name: tagOrFn,
       attrs: attrs as Attrs,
-      children: children.flat().reduce((children, child) => {
-        if (isNode(child)) {
-          return children.concat(child)
-        } else {
-          return children.concat(child.children);
-        }
-      },[] as Node[]),
+      children: childNodes,
     };
   } else {
-    return tagOrFn(props);
+    return tagOrFn({
+      ...props,
+      children: childNodes,
+    });
   }
 }
 
-export function Fragment(fragment: Fragment): Fragment {
-  return fragment;
+export const jsxs = jsx;
+
+export function Fragment(props: JSXProps): Fragment {
+  let { children = [] } = props;
+  let nodes = Array.isArray(children) ? children : [children];
+  return {
+    children: nodes.map(normalize) as Node[],
+  };
+}
+
+function normalize(child: JSXChild): Node | Fragment {
+  switch (typeof child) {
+    case "number":
+    case "boolean":
+      return String(child);
+    default:
+      return child;
+  }
 }

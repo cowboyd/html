@@ -181,14 +181,16 @@ export function tag<T extends string>(name: T): TagConstructor<T> {
 }
 
 export function isNode(value: unknown): value is Node {
-  if (typeof value === 'string') {
-    return true;
-  } else if (value == null) {
-    return false;
-  } else if (typeof value === 'object') {
-    let record = value as Record<string, unknown>;
-    return typeof record.name === "string" && Array.isArray(record.children) && typeof record.attrs === 'object';
-  } else {
-    return false;
-  }
+  return typeof value === "string" || isFragment(value) || isTag(value);
+}
+
+export function isTag<T extends string>(value: unknown): value is Tag<T> {
+  let record = value as Record<string, unknown>;
+  return isFragment(value) && !!record.attrs &&
+    typeof record.attrs === "object" && typeof record.name === "string";
+}
+
+export function isFragment(value: unknown): value is Fragment {
+  return !!(value && typeof value === "object" &&
+    Array.isArray((value as Record<string, unknown>).children));
 }

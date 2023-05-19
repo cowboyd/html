@@ -6,5 +6,13 @@
     "rules": {
       "exclude": ["prefer-const"]
     }
+  },
+  "imports": {
+    "html": "./mod.ts",
+    "html/jsx-runtime": "./jsx-runtime.ts"
+  },
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "html"
   }
 }

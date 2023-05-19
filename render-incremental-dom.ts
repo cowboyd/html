@@ -4,13 +4,13 @@ import { type Element } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm
 
 export function render(html: Tag<string>, element: Element | null): void {
   if (element) {
-    let [, attrs, nodes] = html;
+    let { attrs, children } = html;
 
     for (let [key, value] of Object.entries(attrs)) {
       element.setAttribute(key, String(value));
     }
 
-    inc.patch(element, () => apply(nodes));
+    inc.patch(element, () => apply(children));
   }
 }
 
@@ -19,8 +19,7 @@ function apply(nodes: Node[]): void {
     if (typeof node === "string") {
       inc.text(node);
     } else {
-      let [name, attrs, children] = node;
-
+      let { name, attrs, children } = node;
       inc.elementOpen(name, "", Object.entries(attrs).flat());
 
       apply(children);

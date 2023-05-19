@@ -1,4 +1,5 @@
-import type { Attrs, Node, Tag } from "./mod.ts";
+import type { Attrs, Node, Tag, Fragment } from "./mod.ts";
+import { isNode } from "./mod.ts";
 
 declare global {
   namespace JSX {
@@ -13,32 +14,53 @@ export interface NodeFn {
   (props: Record<string, unknown>): Node;
 }
 
-export function jsx(
-  tagname: string,
-  props: null | Attrs,
-  ...children: Node[]
-): Node;
+export interface JSXProps extends Record<string, unknown> {
+  children?: string | Node;
+}
 
-export function jsx(
-  fn: NodeFn,
-  props: null | Record<string, unknown>,
-  ...children: Node[]
-): Node;
+export interface JSXSProps extends Record<string, unknown> {
+  children?: (string | Node | Fragment)[];
+}
+
 
 export function jsx(
   tagOrFn: string | NodeFn,
-  props: null | Record<string, unknown>,
-  ...children: Node[]
+  props: JSXProps = {}
 ): Node {
-  let attrs = props ?? {};
+  let { children, ...attrs } = props;
   if (typeof tagOrFn === "string") {
-    return [tagOrFn, attrs as Attrs, children];
+    return {
+      name: tagOrFn,
+      attrs: attrs as Attrs,
+      children: children != null ? [children] : [],
+    }
   } else {
-    let args = children.length > 0
-      ? Object.assign({}, attrs, { children })
-      : attrs;
-    return tagOrFn(args);
+    return tagOrFn(props);
   }
 }
 
-export const jsxs = jsx;
+export function jsxs(
+  tagOrFn: string | NodeFn,
+  props: JSXSProps = {}
+): Node {
+  let { children = [], ...attrs } = props;
+  if (typeof tagOrFn === "string") {
+    return {
+      name: tagOrFn,
+      attrs: attrs as Attrs,
+      children: children.flat().reduce((children, child) => {
+        if (isNode(child)) {
+          return children.concat(child)
+        } else {
+          return children.concat(child.children);
+        }
+      },[] as Node[]),
+    };
+  } else {
+    return tagOrFn(props);
+  }
+}
+
+export function Fragment(fragment: Fragment): Fragment {
+  return fragment;
+}

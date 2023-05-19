@@ -8,7 +8,16 @@ export type Attrs = Record<string, string | number | boolean>;
  * It contains the name of the tag, the attributes of the tag followed
  * by the tag content.
  */
-export type Tag<T extends string> = [T, Attrs, Node[]];
+
+export interface Tag<T extends string> {
+  name: T;
+  attrs: Attrs;
+  children: Node[];
+}
+
+export interface Fragment {
+  children: Node[];
+}
 
 /**
  * Represents the children of an element. They can either be other
@@ -153,12 +162,12 @@ export const wbr = tag("wbr");
 
 export function tag<T extends string>(name: T): TagConstructor<T> {
   return (...content) => {
-    let nodes: Node[] = [];
+    let children: Node[] = [];
     let attrlist: Attrs[] = [];
 
     for (let item of content) {
-      if (typeof item === "string" || Array.isArray(item)) {
-        nodes.push(item);
+      if (isNode(item)) {
+        children.push(item);
       } else {
         attrlist.push(item);
       }
@@ -167,6 +176,19 @@ export function tag<T extends string>(name: T): TagConstructor<T> {
     for (let chunk of attrlist) {
       Object.assign(attrs, chunk);
     }
-    return [name, attrs, nodes];
+    return { name, attrs, children };
   };
+}
+
+export function isNode(value: unknown): value is Node {
+  if (typeof value === 'string') {
+    return true;
+  } else if (value == null) {
+    return false;
+  } else if (typeof value === 'object') {
+    let record = value as Record<string, unknown>;
+    return typeof record.name === "string" && Array.isArray(record.children) && typeof record.attrs === 'object';
+  } else {
+    return false;
+  }
 }

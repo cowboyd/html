@@ -1,5 +1,5 @@
 import type { Node, Tag } from "./mod.ts";
-import { default as inc } from "npm:incremental-dom";
+import { default as inc } from "https://esm.sh/incremental-dom@0.7.0";
 import { type Element } from "https://deno.land/x/deno_dom@v0.1.38/deno-dom-wasm.ts";
 
 export function render(html: Tag<string>, element: Element | null): void {
